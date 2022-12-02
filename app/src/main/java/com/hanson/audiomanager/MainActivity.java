@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,8 +32,18 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: isMusicActive="+mAudioManager.isMusicActive());
 //        getAudioFocus();
 //        setMinVolume();
+
+//        AudioUtil.getInstance(this).getAudioInCardList();
+//        AudioUtil.getInstance(this).getActiveOutCardIdList();
+//        AudioUtil.getInstance(this).getAudioInCardId();
+        AudioUtil.getInstance(this).getForceMicroPhone();
+        AudioUtil.getInstance(this).getForceUseOutputDevice();
+        List<AudioDeviceInfo> outputs =  AudioUtil.getInstance(this).getActiveOutCardIdList_new();
+        AudioUtil.getInstance(this).getAudioInCardList_new();
+//        Log.d(TAG, "onCreate: outputs.get(3)="+outputs.get(2).getProductName());
+//        AudioUtil.getInstance(this).setForceUseOutputDevice(outputs.get(2));
         Intent intentAction = new Intent(this,MainService.class);
-        this.startForegroundService(intentAction);
+//        this.startForegroundService(intentAction);
         Log.d(TAG,"startActivity = MainService");
     }
 
