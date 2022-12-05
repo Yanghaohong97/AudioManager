@@ -1,18 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.hanson.audiomanager"
         minSdkVersion 28
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     signingConfigs {
         m6683{
             keyAlias 'android.keystore'
@@ -28,6 +26,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.m6683
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -35,11 +42,15 @@ android {
     }
 }
 
+
 dependencies {
+//    compileOnly files('libs/javalib.jar')
+//    implementation files('libs/content.jar')
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'com.android.support:leanback-v17'
+//    implementation 'com.android.support:leanback-v17'
     implementation 'com.google.android.material:material:1.5.0-alpha02'
+    implementation 'org.jetbrains:annotations:15.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

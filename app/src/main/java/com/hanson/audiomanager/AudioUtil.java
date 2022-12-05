@@ -89,7 +89,7 @@ public class AudioUtil {
             for (AudioDeviceInfo output : outputs) {
                 if (output != null) {
 //                    selectActiveOutCardIDList.append(output.getAddress()+" "+output.getProductName()+" "+output.getId()+"; ");
-                    Log.d(TAG, "outputs: (" + index + ") type="+output.getType()+"address=" + output.getAddress() + ", ProductName=" + output.getProductName() + "; ");
+                    Log.d(TAG, "outputs: (" + index + ") type="+output.getType()+"address=" + output.getAddress() + ", ProductName=" + String.valueOf(output.getProductName()) + "; ");
                     index++;
                 }
             }
@@ -200,6 +200,5 @@ public class AudioUtil {
         Log.d(TAG, "setForceUseOutputDevice: ret="+ret);
         return ret;
     }
-
 
 }
