@@ -3,6 +3,7 @@
     package="com.hanson.audiomanager">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.QUERY_AUDIO_STATE" />
 
     <application
         android:allowBackup="true"
@@ -11,6 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AudioManager">
+        <uses-library
+            android:name="com.cvte.vman"
+            android:required="false" /> <!-- <uses-library android:name="VmanSDKMananger.xml" /> -->
         <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

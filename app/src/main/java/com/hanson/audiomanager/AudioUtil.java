@@ -1,6 +1,7 @@
 package com.hanson.audiomanager;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -53,13 +54,13 @@ public class AudioUtil {
         return selectActiveInCardIDList;
     }
 
-    public List<MicrophoneInfo> getAudioInCardList_new() {
+    public List<MicrophoneInfo> getMicrophones() {
         Class audioManager;
         List<MicrophoneInfo> microphoneInfos = null;
         Method method = null;
         try {
             audioManager = Class.forName("android.media.AudioManager");
-            method = audioManager.getDeclaredMethod("getAudioInCardList");
+            method = audioManager.getDeclaredMethod("getMicrophones");
             microphoneInfos = (ArrayList<MicrophoneInfo>) method.invoke(mAudioManager);
             int index = 0;
             Log.d(TAG, "----------------------------inputs------------------------");
@@ -76,20 +77,24 @@ public class AudioUtil {
         return microphoneInfos;
     }
 
-    public List<AudioDeviceInfo> getActiveOutCardIdList_new() {
+    public AudioDeviceInfo[] getDevices(int type) {
         Class audioManager;
         Method method = null;
-        List<AudioDeviceInfo> outputs = null;
+        String typeName = "outputs";
+        AudioDeviceInfo[] outputs = null;
         try {
             audioManager = Class.forName("android.media.AudioManager");
-            method = audioManager.getDeclaredMethod("getActiveOutAudioCardList");
-            outputs = (ArrayList<AudioDeviceInfo>) method.invoke(mAudioManager);
+            method = audioManager.getDeclaredMethod("getDevices",int.class);
+            outputs = (AudioDeviceInfo[]) method.invoke(mAudioManager,type);
             int index = 0;
-            Log.d(TAG, "----------------------------outputs------------------------");
+            if (type == AudioManager.GET_DEVICES_INPUTS) {
+                typeName = "inputs";
+            }
+            Log.d(TAG, "----------------------------"+typeName+"------------------------");
             for (AudioDeviceInfo output : outputs) {
                 if (output != null) {
 //                    selectActiveOutCardIDList.append(output.getAddress()+" "+output.getProductName()+" "+output.getId()+"; ");
-                    Log.d(TAG, "outputs: (" + index + ") type="+output.getType()+"address=" + output.getAddress() + ", ProductName=" + String.valueOf(output.getProductName()) + "; ");
+                    Log.d(TAG, typeName+": (" + index + ") type="+output.getType()+"address=" + output.getAddress() + ", ProductName=" + output.getProductName() + "; ");
                     index++;
                 }
             }
@@ -99,74 +104,21 @@ public class AudioUtil {
         return outputs;
     }
 
-    public String getActiveOutCardIdList() {
-        String selectActiveOutCardIDList = "";
-        try {
-            Method method = AudioManager.class.getMethod("getActiveOutAudioCardList");
-            selectActiveOutCardIDList = (String) method.invoke(mAudioManager);
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Log.i("Exception", e.toString());
-        }
-        Log.d(TAG, "getActiveOutCardIdList: " + selectActiveOutCardIDList);
-        return selectActiveOutCardIDList;
-    }
-
-    public int getAudioInCardId() {
-        int audioInCardId = -1;
-        try {
-            Method method = AudioManager.class.getMethod("getAudioInCardId");
-            audioInCardId = (int) method.invoke(mAudioManager);
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Log.i("Exception", e.toString());
-        }
-        Log.d(TAG, "getAudioInCardId: audioInCardId=" + audioInCardId);
-        return audioInCardId;
-    }
-
-//    public int getActiveOutCardId() {
-//        int activeOutCardId = -1;
-//        try {
-//            Method method = AudioManager.class.getMethod("getActiveOutCardId");
-//            activeOutCardId = (int) method.invoke(mAudioManager);
-//
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            Log.i("Exception", e.toString());
-//        }
-//        Log.d(TAG, "getActiveOutCardId: activeOutCardId="+activeOutCardId);
-//        return activeOutCardId;
-//    }
-
-//    public int getActiveOutCardId() {
-//        int activeOutCardId = mAudioManager.getActiveOutCardId();
-//        int activeOutCardId = -1;
-//        try {
-//            Method method = AudioManager.class.getMethod("getActiveOutCardId");
-//            activeOutCardId = (int) method.invoke(mAudioManager);
-//
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            Log.i("Exception", e.toString());
-//        }
-//        Log.d(TAG, "getActiveOutCardId: activeOutCardId="+activeOutCardId);
-//        return activeOutCardId;
-//    }
 
     public MicrophoneInfo getForceMicroPhone() {
         MicrophoneInfo microphoneInfo = null;
         try {
-            Method method = AudioManager.class.getMethod("getForceMicroPhone");
+            Method method = AudioManager.class.getDeclaredMethod("getForceMicroPhone");
+            method.setAccessible(true);
             microphoneInfo = (MicrophoneInfo) method.invoke(mAudioManager);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             Log.i("Exception", e.toString());
         }
-        Log.d(TAG, "getForceMicroPhone: getId=" + microphoneInfo.getId() + ", getDescription=" + microphoneInfo.getDescription() + ",getAddress=" + microphoneInfo.getAddress());
+        if (microphoneInfo != null) {
+            Log.d(TAG, "getForceMicroPhone: getId=" + microphoneInfo.getId() + ", getDescription=" + microphoneInfo.getDescription() + ",getAddress=" + microphoneInfo.getAddress());
+        }
         return microphoneInfo;
     }
 
@@ -174,6 +126,7 @@ public class AudioUtil {
         AudioDeviceInfo audioDeviceInfo = null;
         try {
             Method method = AudioManager.class.getMethod("getForceUseOutputDevice");
+            method.setAccessible(true);
             audioDeviceInfo = (AudioDeviceInfo) method.invoke(mAudioManager);
 
         } catch (Exception e) {
@@ -181,24 +134,32 @@ public class AudioUtil {
             Log.i("Exception", e.toString());
         }
         if (audioDeviceInfo != null) {
-            Log.d(TAG, "getAudioInCardId: audioOutCardId=" + audioDeviceInfo.getId());
+            Log.d(TAG, "getForceUseOutputDevice: type="+audioDeviceInfo.getType()+",address="+audioDeviceInfo.getAddress()
+                    +", ProductName" + audioDeviceInfo.getProductName());
+        } else {
+            Log.d(TAG, "getForceUseOutputDevice: audioDeviceInfo is null");
         }
-        Log.d(TAG, "getForceUseOutputDevice: audioDeviceInfo is null");
         return audioDeviceInfo;
     }
 
-    public int setForceUseOutputDevice(AudioDeviceInfo audioDeviceInfo) {
-        int ret = -1;
+    public void setForceMicroPhone(MicrophoneInfo microphoneInfo) {
         try {
-            Method method = AudioManager.class.getMethod("setForceUseOutputDevice", AudioDeviceInfo.class);
-            ret = (int) method.invoke(mAudioManager, audioDeviceInfo);
-
+            Method method = AudioManager.class.getMethod("setForceMicroPhone", MicrophoneInfo.class);
+            method.invoke(mAudioManager, microphoneInfo);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             Log.i("Exception", e.toString());
         }
-        Log.d(TAG, "setForceUseOutputDevice: ret="+ret);
-        return ret;
+    }
+
+    public void setForceUseOutputDevice(AudioDeviceInfo audioDeviceInfo) {
+        try {
+            Method method = AudioManager.class.getMethod("setForceUseOutputDevice", AudioDeviceInfo.class);
+            method.invoke(mAudioManager, audioDeviceInfo);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            Log.i("Exception", e.toString());
+        }
     }
 
 }
